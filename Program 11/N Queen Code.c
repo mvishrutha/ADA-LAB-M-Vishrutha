@@ -1,27 +1,23 @@
-
 #include <stdio.h>
-#include <stdlib.h>
 
 #define MAX 20
 
 int board[MAX][MAX];
+int solutionCount = 0;
 
 int isSafe(int row, int col, int n) {
     int i, j;
 
-    // Check same column
     for (i = 0; i < row; i++) {
         if (board[i][col] == 1)
             return 0;
     }
 
-    // Check upper-left diagonal
     for (i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
         if (board[i][j] == 1)
             return 0;
     }
 
-    // Check upper-right diagonal
     for (i = row - 1, j = col + 1; i >= 0 && j < n; i--, j++) {
         if (board[i][j] == 1)
             return 0;
@@ -31,6 +27,8 @@ int isSafe(int row, int col, int n) {
 }
 
 void printBoard(int n) {
+    printf("\nSolution %d:\n", ++solutionCount);
+
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if (board[i][j] == 1)
@@ -42,24 +40,21 @@ void printBoard(int n) {
     }
 }
 
-int solveNQueens(int row, int n) {
+void solveNQueens(int row, int n) {
     if (row == n) {
-        return 1;
+        printBoard(n);
+        return;
     }
 
     for (int col = 0; col < n; col++) {
         if (isSafe(row, col, n)) {
             board[row][col] = 1;
 
-            if (solveNQueens(row + 1, n)) {
-                return 1;
-            }
+            solveNQueens(row + 1, n);
 
-            board[row][col] = 0;
+            board[row][col] = 0;   // backtrack
         }
     }
-
-    return 0;
 }
 
 int main() {
@@ -69,16 +64,16 @@ int main() {
     scanf("%d", &n);
 
     if (n <= 0 || n > MAX) {
-        printf("Invalid input! Enter n between 1 and %d.\n", MAX);
+        printf("Invalid input!\n");
         return 0;
     }
 
-    if (solveNQueens(0, n)) {
-        printf("\nSolution for %d-Queens Problem:\n\n", n);
-        printBoard(n);
-    } else {
-        printf("\nNo solution exists for %d queens.\n", n);
-    }
+    solveNQueens(0, n);
+
+    if (solutionCount == 0)
+        printf("\nNo solution exists.\n");
+    else
+        printf("\nTotal Solutions = %d\n", solutionCount);
 
     return 0;
 }
